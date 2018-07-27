@@ -1,0 +1,144 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        maven { url 'https://maven.fabric.io/public' }
+    }
+
+    dependencies {
+        classpath 'io.fabric.tools:gradle:1.25.2'
+    }
+}
+
+apply plugin: 'com.android.application'
+apply plugin: 'io.fabric'
+apply plugin: 'com.getkeepsafe.dexcount'
+
+dexcount {
+    format = "tree"
+    includeClasses = true
+    includeFieldCount = true
+    includeTotalMethodCount = true
+    orderByMethodCount = true
+    verbose = false
+}
+
+android {
+    compileSdkVersion 27
+    buildToolsVersion "27.0.3"
+
+    testOptions {
+        // Allows Android code to be called from unit tests without causing a crash.
+        // Helpful for allowing Log.d()-type calls
+        unitTests.returnDefaultValues = true;
+    }
+
+    defaultConfig {
+        applicationId "com.devchris.simpleweather"
+        minSdkVersion 19
+        targetSdkVersion 27
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+
+    signingConfigs {
+        release {
+            // GENERATE YOUR KEYSTORE
+            // 1. Build > Generate Signed APK...
+            // 2. Select your module
+            // 3. Create New
+            // 4. Fill out keystore credentials
+            // 5. Save keystore to the root of the module folder (normally 'app')
+            // 5. Add those credentials to the follow attributes
+            storeFile file("keystore.jks")
+            storePassword "STORE_PASSWORD"
+            keyAlias "KEY_ALIAS"
+            keyPassword "KEY_PASSWORD"
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    buildTypes {
+
+        debug {
+            testCoverageEnabled true
+        }
+
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+        }
+    }
+
+    packagingOptions {
+        exclude 'LICENSE'
+        exclude 'NOTICE'
+        exclude 'META-INF/services/javax.annotation.processing.Processor'
+        exclude 'META-INF/rxjava.properties'
+    }
+
+    lintOptions {
+        abortOnError false
+    }
+
+    dependencies {
+        implementation 'com.android.support:appcompat-v7:27.1.1'
+        implementation 'com.android.support:support-v4:27.1.1'
+        implementation 'com.android.support:design:27.1.1'
+
+        // Metova
+        implementation 'com.metova:slim:1.2'
+
+        // Push
+        implementation 'com.google.code.gson:gson:2.8.2'
+
+        // View Injection
+        implementation 'com.jakewharton:butterknife:8.8.1'
+        annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
+
+        // Logging
+        implementation 'com.jakewharton.timber:timber:4.7.0'
+
+        // Image loading
+        implementation 'com.github.bumptech.glide:glide:4.7.1'
+
+        // Dependency Injection
+        implementation 'com.google.dagger:dagger:2.15'
+        annotationProcessor 'com.google.dagger:dagger-compiler:2.15'
+
+        // Networking / Retrofit
+        implementation 'com.squareup.retrofit2:retrofit:2.4.0'
+        implementation 'com.squareup.retrofit2:converter-moshi:2.4.0'
+        implementation 'com.squareup.retrofit2:adapter-rxjava2:2.2.0'
+        implementation 'com.squareup.okhttp3:logging-interceptor:3.6.0'
+
+        // RX
+        implementation 'io.reactivex.rxjava2:rxandroid:2.0.2'
+        implementation 'io.reactivex.rxjava2:rxjava:2.1.12'
+
+        // Analytics
+        implementation('com.crashlytics.sdk.android:crashlytics:2.6.7@aar') {
+            transitive = true;
+        }
+
+        // Test dependencies
+        androidTestImplementation 'org.mockito:mockito-core:2.18.0'
+        androidTestImplementation 'org.mockito:mockito-android:2.18.0'
+        androidTestAnnotationProcessor 'com.google.dagger:dagger-compiler:2.15'
+
+        androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+        androidTestImplementation 'com.android.support.test.espresso:espresso-intents:3.0.2'
+        androidTestImplementation 'com.android.support.test:runner:1.0.2'
+        androidTestImplementation 'com.google.code.findbugs:jsr305:3.0.2'
+        androidTestImplementation 'com.android.support:support-annotations:27.1.1'
+
+        testImplementation 'junit:junit:4.12'
+    }
+}
+
+apply from: rootProject.file("app/gradle/jacoco.gradle")

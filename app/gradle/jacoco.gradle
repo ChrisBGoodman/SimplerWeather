@@ -1,0 +1,42 @@
+apply plugin: 'jacoco'
+
+def coverageSourceDirs = [
+        '../app/src/main/java'
+]
+
+def classDirs = fileTree(
+        dir: '../app/build/intermediates/classes/debug/com',
+        // Example of excluding auto-generated classes and directories
+        excludes: ['**/R.class',
+                   '**/R$*.class',
+                   '**/*ViewBinding*.*',
+                   '**/*MembersInjector*.*',
+                   '**/BuildConfig.*',
+                   '**/Manifest*.*',
+                   '**/*$Lambda$*.class',
+                   '**/*Factory*.class',
+                   '**/*DaggerApplicationComponent*.class',
+                   '**/*ApplicationModule*.class',
+                   '**/*PreferenceUtilModule*.class',
+                   '**/*RestModule*.class']
+)
+
+// TODO - this is a custom gradle task to be run by a Jenkins plan that will generate the coverage results
+// See http://confluence.metova.com/display/ADEV/How+to+integrate+and+use+Jacoco+for+Android+Projects
+task jacocoCombinedDebugCoverageReport(type: JacocoReport, dependsOn: ["connectedDebugAndroidTest", "testDebugUnitTest"]) {
+    group = "Reporting"
+    description = "Generate Jacoco coverage report for debug build (Instrumentation and Unit tests)"
+    classDirectories = classDirs
+    additionalSourceDirs = files(coverageSourceDirs)
+    sourceDirectories = files(coverageSourceDirs)
+    executionData = files([fileTree(dir: 'build/outputs/code-coverage/connected/', include: '**/*.ec'), fileTree(dir: 'build/jacoco', include: '**/*.exec')])
+
+    onlyIf = {
+        true
+    }
+
+    reports {
+        xml.enabled = true
+        html.enabled = true
+    }
+}
