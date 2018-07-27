@@ -1,6 +1,5 @@
 package com.devchris.simpleweather.module;
 
-
 import com.devchris.simpleweather.BuildConfig;
 import com.devchris.simpleweather.services.BaseService;
 
@@ -12,7 +11,8 @@ import dagger.Module;
 import dagger.Provides;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
-
+import retrofit2.Retrofit;
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 
 @Module
 public class RestModule {
@@ -33,14 +33,11 @@ public class RestModule {
 
         OkHttpClient okHttpClient = okhttpclientBuilder.build();
 
-//        Retrofit retrofit = new Retrofit.Builder().baseUrl("http://myurl.com/api/")
-//                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-//                .addConverterFactory(GsonConverterFactory.create(GsonUtil.getGson()))
-//                .client(okHttpClient)
-//                .build();
-//
-//        return retrofit.create(BaseService.class);
+        Retrofit retrofit = new Retrofit.Builder().baseUrl("http://myurl.com/api/")
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                .client(okHttpClient)
+                .build();
 
-        return null;
+        return retrofit.create(BaseService.class);
     }
 }
